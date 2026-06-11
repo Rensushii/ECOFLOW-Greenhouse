@@ -1,4 +1,9 @@
 {
+  "functions": {
+    "api/redirect.js": {
+      "runtime": "@vercel/node@3.0.11"
+    }
+  },
   "rewrites": [
     { "source": "/(.*)", "destination": "/api/redirect" }
   ]
