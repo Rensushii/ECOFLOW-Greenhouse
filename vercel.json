@@ -1,7 +1,7 @@
 {
   "functions": {
     "api/redirect.py": {
-      "runtime": "@vercel/python@4.1.0"
+      "runtime": "@vercel/python@3.11.0"
     }
   },
   "rewrites": [
