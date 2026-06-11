@@ -1,4 +1,9 @@
 {
+  "functions": {
+    "api/redirect.py": {
+      "runtime": "@vercel/python@4.1.0"
+    }
+  },
   "rewrites": [
     { "source": "/(.*)", "destination": "/api/redirect" }
   ]
