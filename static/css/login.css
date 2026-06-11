@@ -1,0 +1,129 @@
+/* Additional styles for better mobile experience */
+@media (max-width: 480px) {
+    .login-container {
+        padding: 10px;
+    }
+   
+    .login-box {
+        padding: 15px;
+    }
+   
+    .keyboard-key {
+        min-width: 35px;
+        height: 45px;
+        font-size: 14px;
+    }
+   
+    .keyboard-row {
+        gap: 5px;
+        margin-bottom: 5px;
+    }
+   
+    .virtual-keyboard {
+        padding: 15px;
+    }
+   
+    .header h1 {
+        font-size: 1.8rem;
+    }
+   
+    .password-input input {
+        padding: 12px 40px 12px 12px;
+        font-size: 14px;
+    }
+   
+    .login-button {
+        padding: 15px;
+        font-size: 16px;
+    }
+}
+
+/* Prevent text selection on keyboard */
+.keyboard-key {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Smooth transitions */
+.keyboard-key,
+.password-input input,
+.login-button {
+    transition: all 0.2s ease;
+}
+
+/* Active states */
+.keyboard-key:active {
+    transition: all 0.1s ease;
+}
+
+/* Focus styles for accessibility */
+.password-input input:focus {
+    outline: none;
+    border-color: var(--light-green);
+    box-shadow: 0 0 0 3px rgba(60, 179, 113, 0.2);
+}
+
+/* Loading state for login button */
+.login-button.loading {
+    position: relative;
+    color: transparent;
+}
+
+.login-button.loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid white;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Keyboard help tooltip */
+.keyboard-help {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    display: none;
+}
+
+.keyboard-help.show {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Password strength colors */
+.strength-0 { background: linear-gradient(90deg, #ef4444, #f87171); }
+.strength-1 { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.strength-2 { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.strength-3 { background: linear-gradient(90deg, #10b981, #34d399); }
+.strength-4 { background: linear-gradient(90deg, #10b981, #34d399); }
+
+/* Input animation for focus */
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(60, 179, 113, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(60, 179, 113, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(60, 179, 113, 0); }
+}
+
+.password-input input:focus {
+    animation: pulse 2s infinite;
+}
