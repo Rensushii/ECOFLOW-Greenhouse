@@ -3,7 +3,7 @@ from http.server import BaseHTTPRequestHandler
 
 GIST_RAW_URL = "https://gist.githubusercontent.com/Rensushii/02945cbdc4abe5148470106e8a8648b8/raw/tunnel_url.txt"
 
-class handler(BaseHTTPRequestHandler):
+class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         try:
             resp = requests.get(GIST_RAW_URL, timeout=5)
