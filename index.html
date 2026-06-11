@@ -2,24 +2,33 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Greenhouse Dashboard Redirect</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Greenhouse Dashboard</title>
 </head>
 <body>
   <p>Redirecting to greenhouse dashboard...</p>
   <script>
-    fetch('https://gist.githubusercontent.com/Rensushii/02945cbdc4abe5148470106e8a8648b8/raw/tunnel_url.txt')
-      .then(response => response.text())
-      .then(url => {
-        const trimmed = url.trim();
-        if (trimmed.startsWith('https://')) {
-          window.location.replace(trimmed);
-        } else {
+    (function() {
+      // Bypass browser cache by adding a random query parameter
+      var cacheBuster = Date.now();
+      var gistUrl = 'https://gist.githubusercontent.com/Rensushii/02945cbdc4abe5148470106e8a8648b8/raw/tunnel_url.txt?t=' + cacheBuster;
+
+      fetch(gistUrl)
+        .then(response => response.text())
+        .then(url => {
+          var trimmed = url.trim();
+          if (trimmed.startsWith('https://')) {
+            window.location.replace(trimmed);
+          } else {
+            document.body.innerHTML = '<h1>Greenhouse dashboard is offline. Please try again shortly.</h1>';
+          }
+        })
+        .catch(function() {
           document.body.innerHTML = '<h1>Greenhouse dashboard is offline. Please try again shortly.</h1>';
-        }
-      })
-      .catch(() => {
-        document.body.innerHTML = '<h1>Greenhouse dashboard is offline. Please try again shortly.</h1>';
-      });
+        });
+    })();
   </script>
 </body>
 </html>
