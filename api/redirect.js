@@ -12,10 +12,12 @@ module.exports = (req, res) => {
         res.writeHead(302, { Location: tunnelUrl });
         res.end();
       } else {
-        res.status(200).send('<h1>Greenhouse dashboard is offline. Please try again shortly.</h1>');
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end('<h1>Greenhouse dashboard is offline. Please try again shortly.</h1>');
       }
     });
   }).on('error', () => {
-    res.status(200).send('<h1>Greenhouse dashboard is offline. Please try again shortly.</h1>');
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end('<h1>Greenhouse dashboard is offline. Please try again shortly.</h1>');
   });
 };
