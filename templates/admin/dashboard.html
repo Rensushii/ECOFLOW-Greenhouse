@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Greenhouse</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@800;400;500;600;850&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #2E8B57;
+            --light-green: #3CB371;
+            --dark-green: #1A5D3A;
+            --bg-gradient: linear-gradient(135deg, #0c2b1a 0%, #1a3c2b 100%);
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --card-border: rgba(46, 139, 87, 0.3);
+            --text-light: #f0fdf4;
+            --text-muted: #a7f3d0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-light);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 850;
+            background: linear-gradient(90deg, var(--light-green), #90EE90);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: var(--card-bg);
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 1px solid var(--card-border);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-btn {
+            background: rgba(46, 139, 87, 0.3);
+            border: 2px solid var(--light-green);
+            color: var(--light-green);
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .nav-btn:hover {
+            background: var(--light-green);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid var(--card-border);
+            text-align: center;
+        }
+        
+        .stat-title {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 850;
+            color: var(--light-green);
+            line-height: 1;
+        }
+        
+        .stat-unit {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+        
+        .sensors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .sensor-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid var(--card-border);
+        }
+        
+        .sensor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .sensor-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--light-green);
+        }
+        
+        .sensor-value {
+            font-size: 1.8rem;
+            font-weight: 850;
+        }
+        
+        .ai-section {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 1px solid var(--card-border);
+        }
+        
+        .ai-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .section-title {
+            color: var(--light-green);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .ai-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .ai-btn {
+            background: rgba(139, 92, 246, 0.3);
+            border: 2px solid #8b5cf6;
+            color: #a78bfa;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            flex: 1;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .ai-btn:hover {
+            background: #8b5cf6;
+            color: white;
+        }
+        
+        .ai-btn.active {
+            background: #8b5cf6;
+            color: white;
+        }
+        
+        .ai-content {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .ai-content.active {
+            display: block;
+        }
+        
+        .decision-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--info);
+        }
+        
+        .decision-time {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+        
+        .decision-action {
+            font-weight: 600;
+            color: var(--light-green);
+            margin-bottom: 5px;
+        }
+        
+        .decision-reason {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        .schedule-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .schedule-time {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+        
+        .schedule-action {
+            font-weight: 600;
+            color: #f59e0b;
+            margin-bottom: 5px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            background: rgba(46, 139, 87, 0.3);
+            border: 2px solid var(--light-green);
+            color: var(--light-green);
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .control-btn:hover {
+            background: var(--light-green);
+            color: white;
+        }
+        
+        .control-btn.on {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+        
+        .control-btn.off {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: white;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-good {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.5);
+        }
+        
+        .status-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.5);
+        }
+        
+        .status-critical {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+        
+        .system-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .info-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .info-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-weight: 600;
+            color: var(--light-green);
+        }
+        
+        .ml-status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .ml-status-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .ml-status-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+        
+        .ml-status-value {
+            font-weight: 600;
+            color: var(--light-green);
+            font-size: 1.1rem;
+        }
+        
+        /* History table styles */
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .history-table th {
+            background: rgba(46, 139, 87, 0.3);
+            color: var(--light-green);
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(46, 139, 87, 0.5);
+        }
+        
+        .history-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .history-table tr:hover {
+            background: rgba(46, 139, 87, 0.1);
+        }
+        
+        .history-table .status-completed {
+            color: var(--success);
+        }
+        
+        .history-table .status-scheduled {
+            color: var(--warning);
+        }
+        
+        .history-table .status-failed {
+            color: var(--danger);
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+        
+        .schedule-status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+        
+        .status-scheduled {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.5);
+        }
+        
+        .status-completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.5);
+        }
+        
+        .status-failed {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+        }
+        
+        .status-executing {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.5);
+        }
+        
+        /* Schedule Control Panel */
+        .schedule-controls {
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .schedule-controls h4 {
+            margin-top: 0;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .schedule-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .schedule-btn {
+            background: rgba(46, 139, 87, 0.3);
+            border: 2px solid var(--light-green);
+            color: var(--light-green);
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            justify-content: center;
+        }
+        
+        .schedule-btn:hover {
+            background: var(--light-green);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .schedule-btn.test {
+            background: rgba(245, 158, 11, 0.3);
+            border-color: #f59e0b;
+            color: #fcd34d;
+        }
+        
+        .schedule-btn.test:hover {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .schedule-btn.check {
+            background: rgba(16, 185, 129, 0.3);
+            border-color: #10b981;
+            color: #a7f3d0;
+        }
+        
+        .schedule-btn.check:hover {
+            background: #10b981;
+            color: white;
+        }
+        
+        .schedule-btn.force {
+            background: rgba(139, 92, 246, 0.3);
+            border-color: #8b5cf6;
+            color: #c4b5fd;
+        }
+        
+        .schedule-btn.force:hover {
+            background: #8b5cf6;
+            color: white;
+        }
+        
+        .refresh-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .refresh-btn {
+            background: rgba(59, 130, 246, 0.3);
+            border: 1px solid #3b82f6;
+            color: #93c5fd;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .refresh-btn:hover {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .last-updated {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .schedule-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .summary-item {
+            text-align: center;
+        }
+        
+        .summary-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+        
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: 850;
+            color: var(--light-green);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .empty-state h3 {
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+        
+        .empty-state p {
+            margin-bottom: 20px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .action-btn {
+            background: var(--primary-green);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            background: var(--light-green);
+            transform: translateY(-2px);
+        }
+        
+        /* New styles for the header wrapper */
+        .header-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .header-wrapper .section-title {
+            margin: 0;
+        }
+        
+        .predictions-btn {
+            background: rgba(139, 92, 246, 0.3);
+            border: 2px solid #8b5cf6;
+            color: #a78bfa;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .predictions-btn:hover {
+            background: #8b5cf6;
+            color: white;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-tachometer-alt"></i> Greenhouse Admin Dashboard</h1>
+            <p>Complete system control and monitoring</p>
+        </div>
+        
+        <div class="nav-bar">
+            <div class="nav-links">
+                <a href="/" class="nav-btn">
+                    <i class="fas fa-home"></i> Kiosk View
+                </a>
+                <a href="/graphs" class="nav-btn">
+                    <i class="fas fa-chart-line"></i> Graphs
+                </a>
+            </div>
+            
+            <a href="/logout" class="nav-btn" style="background: rgba(239, 68, 68, 0.3); border-color: #ef4444; color: #fca5a5;">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+        
+        <!-- Current Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-title">System Uptime</div>
+                <div class="stat-value" id="uptime">--:--:--</div>
+                <div class="stat-unit">HH:MM:SS</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-title">Total Data Points</div>
+                <div class="stat-value" id="totalData">--</div>
+                <div class="stat-unit">Records</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-title">Water Used Today</div>
+                <div class="stat-value" id="waterToday">--</div>
+                <div class="stat-unit">Liters</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-title">Energy Today</div>
+                <div class="stat-value" id="energyToday">--</div>
+                <div class="stat-unit">kWh</div>
+            </div>
+        </div>
+        
+        <!-- Loading Indicator -->
+        <div id="loading" class="loading">
+            <div style="width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--light-green); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px;"></div>
+            <p>Loading dashboard data...</p>
+        </div>
+        
+        <!-- Dashboard Content -->
+        <div id="dashboardContent" style="display: none;">
+            <!-- Sensor Data -->
+            <div class="sensors-grid">
+                <div class="sensor-card">
+                    <div class="sensor-header">
+                        <div class="sensor-title">
+                            <i class="fas fa-thermometer-half"></i>
+                            <span>Temperature</span>
+                        </div>
+                        <div class="status-badge" id="tempStatus">--</div>
+                    </div>
+                    <div class="sensor-value" id="temperature">--°C</div>
+                    <div style="margin-top: 10px; color: var(--text-muted); font-size: 0.9rem;">
+                        Optimal: 20-28°C
+                    </div>
+                </div>
+                
+                <div class="sensor-card">
+                    <div class="sensor-header">
+                        <div class="sensor-title">
+                            <i class="fas fa-tint"></i>
+                            <span>Humidity</span>
+                        </div>
+                        <div class="status-badge" id="humidityStatus">--</div>
+                    </div>
+                    <div class="sensor-value" id="humidity">--%</div>
+                    <div style="margin-top: 10px; color: var(--text-muted); font-size: 0.9rem;">
+                        Optimal: 40-85%
+                    </div>
+                </div>
+                
+                <div class="sensor-card">
+                    <div class="sensor-header">
+                        <div class="sensor-title">
+                            <i class="fas fa-seedling"></i>
+                            <span>Soil Zone A</span>
+                        </div>
+                        <div class="status-badge" id="soil1Status">--</div>
+                    </div>
+                    <div class="sensor-value" id="soil1">--%</div>
+                    <div style="margin-top: 10px; color: var(--text-muted); font-size: 0.9rem;">
+                        Optimal: 40-60%
+                    </div>
+                </div>
+                
+                <div class="sensor-card">
+                    <div class="sensor-header">
+                        <div class="sensor-title">
+                            <i class="fas fa-seedling"></i>
+                            <span>Soil Zone B</span>
+                        </div>
+                        <div class="status-badge" id="soil2Status">--</div>
+                    </div>
+                    <div class="sensor-value" id="soil2">--%</div>
+                    <div style="margin-top: 10px; color: var(--text-muted); font-size: 0.9rem;">
+                        Optimal: 40-60%
+                    </div>
+                </div>
+                
+                <div class="sensor-card">
+                    <div class="sensor-header">
+                        <div class="sensor-title">
+                            <i class="fas fa-seedling"></i>
+                            <span>Soil Zone C</span>
+                        </div>
+                        <div class="status-badge" id="soil3Status">--</div>
+                    </div>
+                    <div class="sensor-value" id="soil3">--%</div>
+                    <div style="margin-top: 10px; color: var(--text-muted); font-size: 0.9rem;">
+                        Optimal: 40-60%
+                    </div>
+                </div>
+                
+                <div class="sensor-card">
+                    <div class="sensor-header">
+                        <div class="sensor-title">
+                            <i class="fas fa-water"></i>
+                            <span>Water Tank</span>
+                        </div>
+                        <div class="status-badge" id="tankStatus">--</div>
+                    </div>
+                    <div class="sensor-value" id="tankLevel">--%</div>
+                    <div style="margin-top: 10px; color: var(--text-muted); font-size: 0.9rem;">
+                        Status: <span id="tankStatusText">--</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Manual Control Panel -->
+            <div style="background: var(--card-bg); border-radius: 15px; padding: 25px; margin-top: 30px; border: 1px solid var(--card-border);">
+                <h2 style="margin-top: 0; color: var(--light-green);">
+                    <i class="fas fa-sliders-h"></i> Manual Control
+                </h2>
+                
+                <div class="controls">
+                    <button class="control-btn" id="pumpOnBtn" onclick="controlDevice('pump', 'on')">
+                        <i class="fas fa-play"></i> Pump ON
+                    </button>
+                    
+                    <button class="control-btn" id="pumpOffBtn" onclick="controlDevice('pump', 'off')">
+                        <i class="fas fa-stop"></i> Pump OFF
+                    </button>
+                    
+                    <button class="control-btn" id="valveOnBtn" onclick="controlDevice('valve', 'on')">
+                        <i class="fas fa-faucet"></i> Valve ON
+                    </button>
+                    
+                    <button class="control-btn" id="valveOffBtn" onclick="controlDevice('valve', 'off')">
+                        <i class="fas fa-faucet-drip"></i> Valve OFF
+                    </button>
+                </div>
+                
+                <div style="margin-top: 20px; color: var(--text-muted); font-size: 0.9rem;">
+                    <p><i class="fas fa-info-circle"></i> Current Status:</p>
+                    <p>Pump: <span id="pumpState" style="color: var(--light-green);">--</span></p>
+                    <p>Valve: <span id="valveState" style="color: var(--light-green);">--</span></p>
+                </div>
+            </div>
+            
+            <!-- AI Irrigation System -->
+            <div class="ai-section">
+                <!-- Header with Predictions Button -->
+                <div class="header-wrapper">
+                    <h2 class="section-title">
+                        <i class="fas fa-robot"></i> AI Irrigation System
+                    </h2>
+                    <a href="/predictions" class="predictions-btn">
+                        <i class="fas fa-chart-bar"></i> Predictions Dashboard
+                    </a>
+                </div>
+                
+                <!-- Schedule Control Buttons -->
+                <div class="schedule-controls">
+                    <h4><i class="fas fa-cogs"></i> Schedule Controls</h4>
+                    <div class="schedule-buttons">
+                        <button class="schedule-btn test" onclick="testSchedule()">
+                            <i class="fas fa-vial"></i> Test Schedule
+                        </button>
+                        <button class="schedule-btn check" onclick="checkSchedules()">
+                            <i class="fas fa-sync-alt"></i> Check Schedules
+                        </button>
+                        <button class="schedule-btn force" onclick="forceAI()">
+                            <i class="fas fa-robot"></i> Force AI Decision
+                        </button>
+                    </div>
+                    <div class="refresh-controls">
+                        <span class="last-updated" id="lastUpdated">Last updated: --:--:--</span>
+                        <button class="refresh-btn" onclick="forceRefresh()">
+                            <i class="fas fa-redo"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- AI Control Buttons -->
+                <div class="ai-controls">
+                    <button class="ai-btn active" onclick="showAIContent('decisions')">
+                        <i class="fas fa-history"></i> Recent Decisions
+                    </button>
+                    <button class="ai-btn" onclick="showAIContent('schedules')">
+                        <i class="fas fa-calendar-alt"></i> All Schedules
+                    </button>
+                    <button class="ai-btn" onclick="showAIContent('history')">
+                        <i class="fas fa-history"></i> Irrigation History
+                    </button>
+                </div>
+                
+                <!-- Schedule Summary -->
+                <div id="scheduleSummary" class="schedule-summary" style="display: none;">
+                    <div class="summary-item">
+                        <div class="summary-label">Scheduled</div>
+                        <div class="summary-value" id="scheduledCount">0</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Executing</div>
+                        <div class="summary-value" id="executingCount">0</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Completed</div>
+                        <div class="summary-value" id="completedCount">0</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Failed</div>
+                        <div class="summary-value" id="failedCount">0</div>
+                    </div>
+                </div>
+                
+                <!-- Recent Decisions Content -->
+                <div id="decisionsContent" class="ai-content active">
+                    <div id="recentDecisions">
+                        <div class="loading" style="padding: 20px;">
+                            <i class="fas fa-spinner fa-spin"></i> Loading decisions...
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- All Schedules Content -->
+                <div id="schedulesContent" class="ai-content">
+                    <div id="allSchedules">
+                        <div class="loading" style="padding: 20px;">
+                            <i class="fas fa-spinner fa-spin"></i> Loading all schedules...
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Irrigation History Content -->
+                <div id="historyContent" class="ai-content">
+                    <div id="irrigationHistory">
+                        <div class="loading" style="padding: 20px;">
+                            <i class="fas fa-spinner fa-spin"></i> Loading irrigation history...
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ML System Status -->
+                <div style="margin-top: 30px;">
+                    <h3 style="color: var(--text-muted); margin-bottom: 15px;">ML System Status</h3>
+                    <div class="ml-status-grid">
+                        <div class="ml-status-item">
+                            <div class="ml-status-label">System State</div>
+                            <div class="ml-status-value" id="mlState">--</div>
+                        </div>
+                        <div class="ml-status-item">
+                            <div class="ml-status-label">Data Samples</div>
+                            <div class="ml-status-value" id="mlSamples">--</div>
+                        </div>
+                        <div class="ml-status-item">
+                            <div class="ml-status-label">Last Training</div>
+                            <div class="ml-status-value" id="mlTraining">--</div>
+                        </div>
+                        <div class="ml-status-item">
+                            <div class="ml-status-label">Model Accuracy</div>
+                            <div class="ml-status-value" id="mlAccuracy">--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- System Information -->
+            <div style="background: var(--card-bg); border-radius: 15px; padding: 25px; margin-top: 30px; border: 1px solid var(--card-border);">
+                <h2 style="margin-top: 0; color: var(--light-green);">
+                    <i class="fas fa-info-circle"></i> System Information
+                </h2>
+                
+                <div class="system-info">
+                    <div class="info-item">
+                        <div class="info-label">Database Status</div>
+                        <div class="info-value" id="dbStatus">Loading...</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Last Data Sync</div>
+                        <div class="info-value" id="lastSync">Loading...</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Today's Records</div>
+                        <div class="info-value" id="todayRecords">--</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">System Time</div>
+                        <div class="info-value" id="systemTime">--:--:--</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px; color: var(--text-muted);">
+            <p>Greenhouse Monitoring System v2.0 | AI-Powered Irrigation</p>
+        </div>
+    </div>
+    
+    <script>
+        // Global variables
+        let lastUpdateTime = null;
+        let autoRefreshInterval = null;
+        
+        // Update dashboard data
+        async function updateDashboard() {
+            try {
+                // Get sensor data
+                const sensorResponse = await fetch('/api/sensors');
+                const sensorData = await sensorResponse.json();
+                
+                // Get resource data
+                const resourceResponse = await fetch('/api/resources');
+                const resourceData = await resourceResponse.json();
+                
+                // Get ML status
+                const mlResponse = await fetch('/api/ml/status');
+                const mlData = await mlResponse.json();
+                
+                // Get system status
+                const systemResponse = await fetch('/api/system/status');
+                const systemData = await systemResponse.json();
+                
+                // Get AI decisions
+                const aiResponse = await fetch('/api/ai/decisions');
+                const aiData = await aiResponse.json();
+                
+                // Update sensor values with 1 decimal place for temp/humidity
+                document.getElementById('temperature').textContent = 
+                    sensorData.temperature ? sensorData.temperature.toFixed(1) + '°C' : '--°C';
+                document.getElementById('humidity').textContent = 
+                    sensorData.humidity ? sensorData.humidity.toFixed(1) + '%' : '--%';
+                document.getElementById('soil1').textContent = 
+                    sensorData.soil1 ? sensorData.soil1 + '%' : '--%';
+                document.getElementById('soil2').textContent = 
+                    sensorData.soil2 ? sensorData.soil2 + '%' : '--%';
+                document.getElementById('soil3').textContent = 
+                    sensorData.soil3 ? sensorData.soil3 + '%' : '--%';
+                
+                // Calculate tank level
+                const lowLevel = sensorData.lowLevel || 0;
+                const highLevel = sensorData.highLevel || 0;
+                let tankLevel = sensorData.tank_level || 0;
+                let tankStatus = sensorData.tank_status || 'UNKNOWN';
+                let tankStatusClass = 'status-critical';
+                
+                if (tankStatus.includes('FULL')) {
+                    tankStatusClass = 'status-good';
+                } else if (tankStatus.includes('MEDIUM')) {
+                    tankStatusClass = 'status-good';
+                } else if (tankStatus.includes('LOW')) {
+                    tankStatusClass = 'status-warning';
+                } else if (tankStatus.includes('EMPTY')) {
+                    tankStatusClass = 'status-critical';
+                }
+                
+                document.getElementById('tankLevel').textContent = tankLevel + '%';
+                document.getElementById('tankStatusText').textContent = tankStatus;
+                document.getElementById('tankStatus').className = `status-badge ${tankStatusClass}`;
+                document.getElementById('tankStatus').textContent = tankStatus.split(' ')[0];
+                
+                // Update pump and valve states
+                const pumpState = sensorData.pump === 1 ? 'ON' : 'OFF';
+                const valveState = sensorData.valve === 1 ? 'ON' : 'OFF';
+                
+                document.getElementById('pumpState').textContent = pumpState;
+                document.getElementById('valveState').textContent = valveState;
+                
+                // Update control button states
+                updateControlButtons(sensorData.pump, sensorData.valve);
+                
+                // Update resource stats
+                if (resourceData.success) {
+                    const r = resourceData.resources;
+                    document.getElementById('waterToday').textContent = r.daily_water_liters.toFixed(2);
+                    document.getElementById('energyToday').textContent = r.daily_energy_kwh.toFixed(4);
+                }
+                
+                // Update ML status
+                document.getElementById('mlState').textContent = mlData.system_state || '--';
+                document.getElementById('mlSamples').textContent = mlData.data_samples || '--';
+                document.getElementById('mlTraining').textContent = mlData.last_training || '--';
+                document.getElementById('mlAccuracy').textContent = mlData.model_accuracy || '--';
+                
+                // Update system info
+                document.getElementById('uptime').textContent = systemData.uptime || '--:--:--';
+                document.getElementById('totalData').textContent = systemData.database.total_records || '--';
+                document.getElementById('todayRecords').textContent = systemData.database.today_records || '--';
+                document.getElementById('dbStatus').textContent = systemData.database.status || '--';
+                document.getElementById('lastSync').textContent = systemData.last_data_sync || '--';
+                
+                // Update system time
+                const now = new Date();
+                document.getElementById('systemTime').textContent = 
+                    now.getHours().toString().padStart(2, '0') + ':' + 
+                    now.getMinutes().toString().padStart(2, '0') + ':' +
+                    now.getSeconds().toString().padStart(2, '0');
+                
+                // Update last updated time
+                lastUpdateTime = new Date();
+                document.getElementById('lastUpdated').textContent = 
+                    `Last updated: ${lastUpdateTime.toLocaleTimeString()}`;
+                
+                // Update status badges
+                updateStatusBadges(sensorData);
+                
+                // Update AI decisions
+                updateAIDecisions(aiData);
+                
+                // Load content based on active tab
+                if (document.getElementById('schedulesContent').classList.contains('active')) {
+                    loadAllSchedules();
+                } else if (document.getElementById('historyContent').classList.contains('active')) {
+                    await loadIrrigationHistory();
+                }
+                
+                // Show content, hide loading
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('dashboardContent').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error updating dashboard:', error);
+                // Show error in last updated
+                document.getElementById('lastUpdated').textContent = 
+                    `Update failed: ${new Date().toLocaleTimeString()}`;
+            }
+        }
+        
+        // Update schedule summary
+        function updateScheduleSummary(aiData) {
+            if (!aiData.success || !aiData.upcoming_schedules) {
+                document.getElementById('scheduleSummary').style.display = 'none';
+                return;
+            }
+            
+            const schedules = aiData.upcoming_schedules;
+            let scheduledCount = 0;
+            let executingCount = 0;
+            let completedCount = 0;
+            let failedCount = 0;
+            
+            schedules.forEach(schedule => {
+                const status = schedule.status ? schedule.status.toLowerCase() : 'scheduled';
+                switch (status) {
+                    case 'scheduled':
+                        scheduledCount++;
+                        break;
+                    case 'executing':
+                        executingCount++;
+                        break;
+                    case 'completed':
+                        completedCount++;
+                        break;
+                    case 'failed':
+                        failedCount++;
+                        break;
+                }
+            });
+            
+            document.getElementById('scheduledCount').textContent = scheduledCount;
+            document.getElementById('executingCount').textContent = executingCount;
+            document.getElementById('completedCount').textContent = completedCount;
+            document.getElementById('failedCount').textContent = failedCount;
+            
+            // Show summary if we have any schedules
+            if (scheduledCount > 0 || executingCount > 0 || completedCount > 0 || failedCount > 0) {
+                document.getElementById('scheduleSummary').style.display = 'flex';
+            } else {
+                document.getElementById('scheduleSummary').style.display = 'none';
+            }
+        }
+        
+        // Show AI content
+        function showAIContent(contentType) {
+            // Update button states
+            document.querySelectorAll('.ai-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Show selected content
+            document.getElementById('decisionsContent').classList.remove('active');
+            document.getElementById('schedulesContent').classList.remove('active');
+            document.getElementById('historyContent').classList.remove('active');
+            document.getElementById(contentType + 'Content').classList.add('active');
+            
+            // Load content if needed
+            if (contentType === 'history') {
+                loadIrrigationHistory();
+            } else if (contentType === 'schedules') {
+                loadAllSchedules();
+            }
+        }
+        
+        // New function to load all schedules
+        async function loadAllSchedules() {
+            try {
+                const schedulesDiv = document.getElementById('allSchedules');
+                schedulesDiv.innerHTML = `
+                    <div class="loading" style="padding: 20px;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading all schedules...
+                    </div>
+                `;
+                
+                const response = await fetch('/api/ai/schedules');
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayAllSchedules(data);
+                }
+            } catch (error) {
+                console.error('Error loading all schedules:', error);
+                schedulesDiv.innerHTML = `
+                    <div style="color: var(--danger); text-align: center; padding: 20px;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error loading all schedules</p>
+                        <button onclick="loadAllSchedules()" style="margin-top: 10px; padding: 8px 15px; background: var(--danger); color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            Try Again
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        function displayAllSchedules(data) {
+            const schedulesDiv = document.getElementById('allSchedules');
+            
+            let html = `
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: var(--light-green);">
+                        <i class="fas fa-calendar-alt"></i> All Schedules
+                    </h3>
+                    <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                        <div style="background: rgba(16, 185, 129, 0.2); padding: 10px; border-radius: 8px;">
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Total</div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: var(--light-green);">${data.total_count}</div>
+                        </div>
+                        <div style="background: rgba(245, 158, 11, 0.2); padding: 10px; border-radius: 8px;">
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Upcoming</div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #f59e0b;">${data.upcoming_count}</div>
+                        </div>
+                        <div style="background: rgba(59, 130, 246, 0.2); padding: 10px; border-radius: 8px;">
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Recent</div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #3b82f6;">${data.recent_count}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Display upcoming schedules
+            if (data.upcoming_schedules && data.upcoming_schedules.length > 0) {
+                html += `
+                    <h4 style="color: var(--text-muted); margin-top: 20px;">
+                        <i class="fas fa-clock"></i> Upcoming Schedules
+                    </h4>
+                `;
+                
+                data.upcoming_schedules.forEach(schedule => {
+                    html += formatScheduleItem(schedule, 'upcoming');
+                });
+            } else {
+                html += `
+                    <div class="empty-state" style="margin: 20px 0; padding: 20px;">
+                        <i class="fas fa-clock"></i>
+                        <h3>No Upcoming Schedules</h3>
+                        <p>No schedules are currently planned for the future.</p>
+                    </div>
+                `;
+            }
+            
+            // Display recent schedules
+            if (data.recent_schedules && data.recent_schedules.length > 0) {
+                html += `
+                    <h4 style="color: var(--text-muted); margin-top: 20px;">
+                        <i class="fas fa-history"></i> Recent Schedules
+                    </h4>
+                `;
+                
+                data.recent_schedules.forEach(schedule => {
+                    html += formatScheduleItem(schedule, 'recent');
+                });
+            } else {
+                html += `
+                    <div class="empty-state" style="margin: 20px 0; padding: 20px;">
+                        <i class="fas fa-history"></i>
+                        <h3>No Recent Schedules</h3>
+                        <p>No schedules have been executed recently.</p>
+                    </div>
+                `;
+            }
+            
+            schedulesDiv.innerHTML = html;
+        }
+        
+        function formatScheduleItem(schedule, type) {
+            let displayTime = 'Unknown time';
+            let dateStr = 'Unknown date';
+            try {
+                if (schedule.scheduled_time) {
+                    let timeStr = schedule.scheduled_time;
+                    if (timeStr.includes('T')) {
+                        timeStr = timeStr.split('.')[0];
+                        if (!timeStr.includes('Z')) {
+                            timeStr += 'Z';
+                        }
+                    }
+                    const date = new Date(timeStr);
+                    if (!isNaN(date.getTime())) {
+                        displayTime = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        dateStr = date.toLocaleDateString();
+                    }
+                }
+            } catch (e) {
+                console.error('Error parsing schedule time:', e);
+            }
+            
+            const action = schedule.action > 0 ? `Irrigate for ${schedule.action} minutes` : 'No irrigation';
+            const reason = schedule.reason || 'No reason provided';
+            const status = schedule.status || 'scheduled';
+            
+            let statusClass = 'status-scheduled';
+            let statusText = 'SCHEDULED';
+            
+            if (status === 'completed') {
+                statusClass = 'status-completed';
+                statusText = 'COMPLETED';
+            } else if (status === 'failed') {
+                statusClass = 'status-failed';
+                statusText = 'FAILED';
+            } else if (status === 'executing') {
+                statusClass = 'status-executing';
+                statusText = 'EXECUTING';
+            }
+            
+            const isUpcoming = type === 'upcoming';
+            const timePrefix = isUpcoming ? 'Scheduled:' : 'Was scheduled:';
+            
+            return `
+                <div class="schedule-item" style="margin-bottom: 10px; ${isUpcoming ? 'border-left: 4px solid #f59e0b;' : 'border-left: 4px solid #3b82f6;'}">
+                    <div class="schedule-time">
+                        <i class="far fa-clock"></i> ${timePrefix} ${dateStr} ${displayTime}
+                        <span class="schedule-status ${statusClass}">${statusText}</span>
+                    </div>
+                    <div class="schedule-action">${action}</div>
+                    <div class="decision-reason">${reason}</div>
+                    ${schedule.execution_time ? `<div style="font-size: 0.8rem; color: var(--text-muted);">Executed: ${new Date(schedule.execution_time).toLocaleString()}</div>` : ''}
+                </div>
+            `;
+        }
+        
+        // Load irrigation history
+        async function loadIrrigationHistory() {
+            try {
+                const historyDiv = document.getElementById('irrigationHistory');
+                historyDiv.innerHTML = `
+                    <div class="loading" style="padding: 20px;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading irrigation history...
+                    </div>
+                `;
+                
+                const response = await fetch('/api/irrigation-history?key=group4_thesis_secret54rg79j32k4dsn930ytt26');
+                const data = await response.json();
+                
+                if (data.success && data.history && data.history.length > 0) {
+                    let historyHtml = `
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Type</th>
+                                    <th>Duration</th>
+                                    <th>Water Used</th>
+                                    <th>Status</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+                    
+                    data.history.forEach(item => {
+                        const date = new Date(item.timestamp);
+                        const dateStr = date.toLocaleDateString();
+                        const timeStr = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        const statusClass = item.status === 'Completed' ? 'status-completed' : 
+                                          item.status === 'Scheduled' ? 'status-scheduled' : 'status-failed';
+                        
+                        // Determine type icon
+                        let typeIcon = 'fas fa-question';
+                        let typeText = item.type || 'Unknown';
+                        if (item.type === 'AI') typeIcon = 'fas fa-robot';
+                        if (item.type === 'Manual') typeIcon = 'fas fa-hand-paper';
+                        if (item.type === 'Scheduled') typeIcon = 'fas fa-calendar-alt';
+                        
+                        historyHtml += `
+                            <tr>
+                                <td>${dateStr}</td>
+                                <td>${timeStr}</td>
+                                <td><i class="${typeIcon}"></i> ${typeText}</td>
+                                <td>${item.duration} minutes</td>
+                                <td>${item.water_used.toFixed(2)} L</td>
+                                <td class="${statusClass}">${item.status}</td>
+                                <td>${item.reason || item.notes || '-'}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    historyHtml += `
+                            </tbody>
+                        </table>
+                        <div style="margin-top: 10px; color: var(--text-muted); font-size: 0.9rem;">
+                            <i class="fas fa-info-circle"></i> Showing ${data.history.length} most recent irrigation events
+                        </div>
+                    `;
+                    
+                    historyDiv.innerHTML = historyHtml;
+                } else {
+                    historyDiv.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-tint-slash"></i>
+                            <h3>No Irrigation History</h3>
+                            <p>No irrigation events have been recorded yet. Irrigations will appear here after they occur.</p>
+                            <button class="action-btn" onclick="testSchedule()">
+                                <i class="fas fa-vial"></i> Create Test Irrigation
+                            </button>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading irrigation history:', error);
+                document.getElementById('irrigationHistory').innerHTML = `
+                    <div style="color: var(--danger); text-align: center; padding: 20px;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error loading irrigation history</p>
+                        <button onclick="loadIrrigationHistory()" style="margin-top: 10px; padding: 8px 15px; background: var(--danger); color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            Try Again
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // Update AI decisions display
+        function updateAIDecisions(aiData) {
+            const recentDecisionsDiv = document.getElementById('recentDecisions');
+            const upcomingSchedulesDiv = document.getElementById('allSchedules');
+            
+            if (aiData.success) {
+                // Recent decisions
+                if (aiData.decisions && aiData.decisions.length > 0) {
+                    let decisionsHtml = '';
+                    aiData.decisions.forEach(decision => {
+                        let displayTime = 'Unknown time';
+                        try {
+                            // Handle ISO date format
+                            let timeStr = decision.timestamp;
+                            if (timeStr.includes('T')) {
+                                // Remove milliseconds if present
+                                timeStr = timeStr.split('.')[0];
+                                // Ensure proper format
+                                if (!timeStr.includes('Z')) {
+                                    timeStr += 'Z'; // Add UTC indicator
+                                }
+                            }
+                            const date = new Date(timeStr);
+                            if (!isNaN(date.getTime())) {
+                                displayTime = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                            }
+                        } catch (e) {
+                            console.error('Error parsing decision time:', e);
+                        }
+                        
+                        const action = decision.action > 0 ? `Irrigate for ${decision.action} minutes` : 'No irrigation';
+                        const reason = decision.reason || 'No reason provided';
+                        const executed = decision.executed ? ' (Executed)' : ' (Not executed)';
+                        const model = decision.model_used || 'Unknown';
+                        
+                        decisionsHtml += `
+                            <div class="decision-item">
+                                <div class="decision-time">
+                                    ${displayTime}${executed}
+                                    <span style="float: right; font-size: 0.7rem; color: var(--text-muted);">${model}</span>
+                                </div>
+                                <div class="decision-action">${action}</div>
+                                <div class="decision-reason">${reason}</div>
+                            </div>
+                        `;
+                    });
+                    recentDecisionsDiv.innerHTML = decisionsHtml;
+                } else {
+                    recentDecisionsDiv.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-brain"></i>
+                            <h3>No AI Decisions</h3>
+                            <p>AI decisions will appear here when the system makes irrigation choices based on sensor data.</p>
+                            <button class="action-btn" onclick="forceAI()">
+                                <i class="fas fa-robot"></i> Force AI Decision
+                            </button>
+                        </div>
+                    `;
+                }
+            } else {
+                console.error('AI data not successful:', aiData);
+                recentDecisionsDiv.innerHTML = '<div style="color: var(--danger); text-align: center; padding: 20px;">Error loading decisions</div>';
+            }
+        }
+        
+        // Update control button states
+        function updateControlButtons(pumpState, valveState) {
+            const pumpOnBtn = document.getElementById('pumpOnBtn');
+            const pumpOffBtn = document.getElementById('pumpOffBtn');
+            const valveOnBtn = document.getElementById('valveOnBtn');
+            const valveOffBtn = document.getElementById('valveOffBtn');
+            
+            // Reset all buttons
+            [pumpOnBtn, pumpOffBtn, valveOnBtn, valveOffBtn].forEach(btn => {
+                btn.className = 'control-btn';
+            });
+            
+            // Set active states
+            if (pumpState === 1) {
+                pumpOnBtn.classList.add('on');
+            } else {
+                pumpOffBtn.classList.add('off');
+            }
+            
+            if (valveState === 1) {
+                valveOnBtn.classList.add('on');
+            } else {
+                valveOffBtn.classList.add('off');
+            }
+        }
+        
+        // Update status badges
+        function updateStatusBadges(data) {
+            // Temperature status
+            const temp = data.temperature || 25;
+            let tempStatus = 'status-good';
+            let tempText = 'GOOD';
+            
+            if (temp < 18 || temp > 32) {
+                tempStatus = 'status-critical';
+                tempText = 'ALERT';
+            } else if (temp < 20 || temp > 28) {
+                tempStatus = 'status-warning';
+                tempText = 'MONITOR';
+            }
+            
+            document.getElementById('tempStatus').className = `status-badge ${tempStatus}`;
+            document.getElementById('tempStatus').textContent = tempText;
+            
+            // Humidity status
+            const humidity = data.humidity || 60;
+            let humidityStatus = 'status-good';
+            let humidityText = 'GOOD';
+            
+            if (humidity < 30 || humidity > 90) {
+                humidityStatus = 'status-critical';
+                humidityText = 'ALERT';
+            } else if (humidity < 40 || humidity > 85) {
+                humidityStatus = 'status-warning';
+                humidityText = 'MONITOR';
+            }
+            
+            document.getElementById('humidityStatus').className = `status-badge ${humidityStatus}`;
+            document.getElementById('humidityStatus').textContent = humidityText;
+            
+            // Soil status
+            const soil1 = data.soil1 || 50;
+            const soil2 = data.soil2 || 50;
+            const soil3 = data.soil3 || 50;
+            
+            updateSoilStatus('soil1', soil1);
+            updateSoilStatus('soil2', soil2);
+            updateSoilStatus('soil3', soil3);
+        }
+        
+        function updateSoilStatus(elementId, value) {
+            let status = 'status-good';
+            let text = 'GOOD';
+            
+            if (value < 30 || value > 90) {
+                status = 'status-critical';
+                text = 'ALERT';
+            } else if (value < 40 || value > 60) {
+                status = 'status-warning';
+                text = 'MONITOR';
+            }
+            
+            document.getElementById(elementId + 'Status').className = `status-badge ${status}`;
+            document.getElementById(elementId + 'Status').textContent = text;
+        }
+        
+        // Control device
+        async function controlDevice(device, state) {
+            try {
+                const response = await fetch('/api/control', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Api-Key': 'group4_thesis_secret54rg79j32k4dsn930ytt26'
+                    },
+                    body: JSON.stringify({
+                        device: device,
+                        state: state,
+                        command_id: Date.now() // Generate unique ID
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    console.log(`Control ${device} ${state}: Success`);
+                    // Update dashboard to reflect new state
+                    updateDashboard();
+                }
+            } catch (error) {
+                console.error('Error controlling device:', error);
+            }
+        }
+        
+        // Test schedule creation
+        async function testSchedule() {
+            try {
+                const response = await fetch('/api/test-schedule', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Api-Key': 'group4_thesis_secret54rg79j32k4dsn930ytt26'
+                    }
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    alert(`? Test schedule created for ${result.schedule_time}\nDuration: ${result.duration} minutes`);
+                    updateDashboard(); // Refresh the dashboard
+                } else {
+                    alert('? Failed to create test schedule: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error creating test schedule:', error);
+                alert('? Error creating test schedule: ' + error.message);
+            }
+        }
+        
+        // Check schedules
+        async function checkSchedules() {
+            try {
+                const response = await fetch('/api/check-schedules', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Api-Key': 'group4_thesis_secret54rg79j32k4dsn930ytt26'
+                    }
+                });
+                
+                const result = await response.json();
+                alert(`?? ${result.message}`);
+                updateDashboard(); // Refresh the dashboard
+            } catch (error) {
+                console.error('Error checking schedules:', error);
+                alert('? Error checking schedules: ' + error.message);
+            }
+        }
+        
+        // Force AI decision
+        async function forceAI() {
+            try {
+                const response = await fetch('/api/ai/force-decision', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Api-Key': 'group4_thesis_secret54rg79j32k4dsn930ytt26'
+                    }
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    alert(`? AI decision made:\n${result.decision.action} minutes - ${result.decision.reason}`);
+                    updateDashboard(); // Refresh the dashboard
+                } else {
+                    alert('? Failed to force AI decision: ' + (result.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error forcing AI decision:', error);
+                alert('? Error forcing AI decision: ' + error.message);
+            }
+        }
+        
+        // Force refresh
+        function forceRefresh() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('dashboardContent').style.display = 'none';
+            updateDashboard();
+        }
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initial update
+            updateDashboard();
+            
+            // Update every 5 seconds
+            autoRefreshInterval = setInterval(updateDashboard, 5000);
+            
+            // Clean up interval on page unload
+            window.addEventListener('beforeunload', function() {
+                if (autoRefreshInterval) {
+                    clearInterval(autoRefreshInterval);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

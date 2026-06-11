@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Greenhouse Monitoring{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@800;400;500;600;850&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #2E8B57;
+            --light-green: #3CB371;
+            --dark-green: #1A5D3A;
+            --bg-gradient: linear-gradient(135deg, #0c2b1a 0%, #1a3c2b 100%);
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --card-border: rgba(46, 139, 87, 0.3);
+            --text-light: #f0fdf4;
+            --text-muted: #a7f3d0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+        }
+       
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-light);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+       
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+       
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+       
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 850;
+            background: linear-gradient(90deg, var(--light-green), #90EE90);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+        }
+    </style>
+    
+    {% if request.endpoint == 'login' %}
+    <!-- Additional styles for login page -->
+    <style>
+        /* Mobile optimization for login */
+        @media (max-width: 480px) {
+            .keyboard-key {
+                min-width: 30px;
+                height: 40px;
+                font-size: 13px;
+            }
+           
+            .keyboard-row {
+                gap: 4px;
+                margin-bottom: 4px;
+            }
+        }
+       
+        /* Touch feedback improvements */
+        .keyboard-key {
+            -webkit-tap-highlight-color: transparent;
+        }
+       
+        /* Prevent zoom on iOS */
+        input, select, textarea {
+            font-size: 16px;
+        }
+    </style>
+    {% endif %}
+    
+    {% block styles %}{% endblock %}
+</head>
+<body>
+    {% block content %}{% endblock %}
+   
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greenhouse Enhanced Graphs (Complete)</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@800;400;500;600;850&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #2E8B57;
+            --light-green: #3CB371;
+            --dark-green: #1A5D3A;
+            --bg-gradient: linear-gradient(135deg, #0c2b1a 0%, #1a3c2b 100%);
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --card-border: rgba(46, 139, 87, 0.3);
+            --text-light: #f0fdf4;
+            --text-muted: #a7f3d0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-light);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 850;
+            background: linear-gradient(90deg, var(--light-green), #90EE90);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: rgba(46, 139, 87, 0.3);
+            border: 2px solid var(--light-green);
+            color: var(--light-green);
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background: var(--light-green);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .btn.active {
+            background: var(--light-green);
+            color: white;
+        }
+        
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chart-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .chart-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--light-green);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+        
+        .current-stats {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-chart-line"></i> Greenhouse Graphs</h1>
+            <p>Interactive charts</p>
+        </div>
+        
+        <div class="controls">
+            <button class="btn active" onclick="loadData(24)">
+                <i class="fas fa-clock"></i> Last 24 Hours
+            </button>
+            <button class="btn" onclick="loadData(48)">
+                <i class="fas fa-calendar-day"></i> Last 48 Hours
+            </button>
+            <button class="btn" onclick="loadData(168)">
+                <i class="fas fa-calendar-week"></i> Last 7 Days
+            </button>
+            <a href="/graphs" class="btn">
+                <i class="fas fa-arrow-left"></i> Simple Graphs
+            </a>
+            <a href="/admin" class="btn">
+                <i class="fas fa-tachometer-alt"></i> Admin Dashboard
+            </a>
+        </div>
+        
+        <!-- Current Stats -->
+        <div class="current-stats">
+            <div class="stat-item">
+                <div class="stat-label">Temperature</div>
+                <div class="stat-value" id="currentTemp">--°C</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Humidity</div>
+                <div class="stat-value" id="currentHumidity">--%</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Soil A</div>
+                <div class="stat-value" id="currentSoil1">--%</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Soil B</div>
+                <div class="stat-value" id="currentSoil2">--%</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Soil C</div>
+                <div class="stat-value" id="currentSoil3">--%</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Last Update</div>
+                <div class="stat-value" id="lastUpdate">--</div>
+            </div>
+        </div>
+        
+        <!-- Loading Indicator -->
+        <div id="loading" class="loading">
+            <div style="width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--light-green); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px;"></div>
+            <p>Loading data...</p>
+        </div>
+        
+        <!-- Charts Container -->
+        <div id="charts" style="display: none;">
+            <div class="charts-container">
+                <!-- Temperature & Humidity Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">
+                            <i class="fas fa-thermometer-half"></i>
+                            <span>Temperature & Humidity</span>
+                        </div>
+                        <div id="tempHumidityStats" style="font-size: 0.9rem; color: var(--text-muted); text-align: right;">
+                            Loading...
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="tempHumidityChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Soil Moisture Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">
+                            <i class="fas fa-seedling"></i>
+                            <span>Soil Moisture (3 Zones)</span>
+                        </div>
+                        <div id="soilStats" style="font-size: 0.9rem; color: var(--text-muted); text-align: right;">
+                            Loading...
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="soilChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Water Tank Level -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">
+                            <i class="fas fa-water"></i>
+                            <span>Water Tank Level</span>
+                        </div>
+                        <div id="tankStats" style="font-size: 0.9rem; color: var(--text-muted); text-align: right;">
+                            Loading...
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="tankChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Irrigation Activity -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">
+                            <i class="fas fa-tint"></i>
+                            <span>Irrigation Activity</span>
+                        </div>
+                        <div id="irrigationStats" style="font-size: 0.9rem; color: var(--text-muted); text-align: right;">
+                            Loading...
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="irrigationChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Water Consumption -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">
+                            <i class="fas fa-water"></i>
+                            <span>Water Consumption</span>
+                        </div>
+                        <div id="waterStats" style="font-size: 0.9rem; color: var(--text-muted); text-align: right;">
+                            Loading...
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="waterChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Energy Consumption -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">
+                            <i class="fas fa-bolt"></i>
+                            <span>Energy Consumption</span>
+                        </div>
+                        <div id="energyStats" style="font-size: 0.9rem; color: var(--text-muted); text-align: right;">
+                            Loading...
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="energyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentHours = 24;
+        const charts = {};
+        
+        // Simple data processing that actually works
+        async function loadData(hours) {
+            currentHours = hours;
+            
+            try {
+                // Update button states
+                document.querySelectorAll('.btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event?.target.classList.add('active');
+                
+                // Show loading
+                document.getElementById('loading').style.display = 'block';
+                document.getElementById('charts').style.display = 'none';
+                
+                // Fetch live sensor data
+                const sensorResponse = await fetch('/api/sensors');
+                const sensorData = await sensorResponse.json();
+                
+                // Fetch historical data - limit to reasonable amount
+                const limit = Math.min(1000, hours * 12); // Approx 5-minute intervals
+                const historicalResponse = await fetch(`/api/data?key=group4_thesis_secret54rg79j32k4dsn930ytt26&limit=${limit}`);
+                const historicalData = await historicalResponse.json();
+                
+                // Fetch resource consumption data if available
+                let resourceData = null;
+                try {
+                    const resourceResponse = await fetch(`/api/resources/history?hours=${hours}`);
+                    if (resourceResponse.ok) {
+                        resourceData = await resourceResponse.json();
+                    }
+                } catch (e) {
+                    console.log('Resource data not available:', e.message);
+                }
+                
+                console.log('Data loaded:', {
+                    sensorData: sensorData,
+                    historicalCount: historicalData.length,
+                    resourceData: resourceData
+                });
+                
+                // Update current stats
+                updateCurrentStats(sensorData);
+                
+                // Process and display charts
+                createAllCharts(historicalData, resourceData, hours);
+                
+                // Hide loading, show charts
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('charts').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('loading').innerHTML = `
+                    <div style="color: #ef4444;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error loading data: ${error.message}</p>
+                        <button onclick="location.reload()" style="margin-top: 10px; padding: 8px 15px; background: #ef4444; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            Try Again
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        function updateCurrentStats(data) {
+            document.getElementById('currentTemp').textContent = 
+                data.temperature ? data.temperature.toFixed(1) + '°C' : '--°C';
+            document.getElementById('currentHumidity').textContent = 
+                data.humidity ? data.humidity.toFixed(1) + '%' : '--%';
+            document.getElementById('currentSoil1').textContent = 
+                data.soil1 ? data.soil1 + '%' : '--%';
+            document.getElementById('currentSoil2').textContent = 
+                data.soil2 ? data.soil2 + '%' : '--%';
+            document.getElementById('currentSoil3').textContent = 
+                data.soil3 ? data.soil3 + '%' : '--%';
+            document.getElementById('lastUpdate').textContent = 
+                new Date().toLocaleTimeString();
+        }
+        
+        function createAllCharts(data, resourceData, hours) {
+            if (!data || data.length === 0) {
+                console.log('No data to display');
+                return;
+            }
+            
+            // Sort data by timestamp
+            data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+            
+            // Prepare data arrays for sensor data
+            const labels = [];
+            const temperatures = [];
+            const humidities = [];
+            const soil1 = [];
+            const soil2 = [];
+            const soil3 = [];
+            const tankLevels = [];
+            const irrigationActivity = [];
+            
+            // Process each data point
+            data.forEach(item => {
+                const time = new Date(item.timestamp);
+                
+                // Format label based on time range
+                let label;
+                if (hours <= 48) {
+                    label = `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
+                } else {
+                    label = `${time.getMonth()+1}/${time.getDate()} ${time.getHours().toString().padStart(2, '0')}:00`;
+                }
+                
+                labels.push(label);
+                temperatures.push(item.temperature || 0);
+                humidities.push(item.humidity || 0);
+                soil1.push(item.soil1 || 0);
+                soil2.push(item.soil2 || 0);
+                soil3.push(item.soil3 || 0);
+                
+                // Calculate tank level (0-100%)
+                let tankPercent = 0;
+                if (item.lowLevel === 0 && item.highLevel === 0) tankPercent = 100;
+                else if (item.lowLevel === 0 && item.highLevel === 1) tankPercent = 50;
+                else if (item.lowLevel === 1 && item.highLevel === 1) tankPercent = 0;
+                else tankPercent = 25;
+                tankLevels.push(tankPercent);
+                
+                // Irrigation activity (1 if pump is on, 0 if off)
+                irrigationActivity.push(item.pump || 0);
+            });
+            
+            // 1. Create Temperature & Humidity Chart
+            createChart('tempHumidityChart', {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Temperature (°C)',
+                            data: temperatures,
+                            borderColor: '#ff6384',
+                            backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.1,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Humidity (%)',
+                            data: humidities,
+                            borderColor: '#36a2eb',
+                            backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.1,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: getChartOptions(`Temperature & Humidity (Last ${hours} hours)`)
+            });
+            
+            // Update temperature/humidity stats
+            const avgTemp = (temperatures.reduce((a, b) => a + b, 0) / temperatures.length).toFixed(1);
+            const avgHum = (humidities.reduce((a, b) => a + b, 0) / humidities.length).toFixed(1);
+            document.getElementById('tempHumidityStats').innerHTML = 
+                `Avg: ${avgTemp}°C / ${avgHum}%`;
+            
+            // 2. Create Soil Moisture Chart
+            createChart('soilChart', {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Zone A',
+                            data: soil1,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.1,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Zone B',
+                            data: soil2,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.1,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Zone C',
+                            data: soil3,
+                            borderColor: '#8b5cf6',
+                            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.1,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: getChartOptions(`Soil Moisture (Last ${hours} hours)`)
+            });
+            
+            // Update soil stats
+            const avgSoil1 = (soil1.reduce((a, b) => a + b, 0) / soil1.length).toFixed(0);
+            const avgSoil2 = (soil2.reduce((a, b) => a + b, 0) / soil2.length).toFixed(0);
+            const avgSoil3 = (soil3.reduce((a, b) => a + b, 0) / soil3.length).toFixed(0);
+            document.getElementById('soilStats').innerHTML = 
+                `Avg: A=${avgSoil1}% B=${avgSoil2}% C=${avgSoil3}%`;
+            
+            // 3. Create Water Tank Chart
+            createChart('tankChart', {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Tank Level (%)',
+                        data: tankLevels,
+                        borderColor: '#0ea5e9',
+                        backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.1,
+                        pointRadius: 0
+                    }]
+                },
+                options: getChartOptions(`Water Tank Level (Last ${hours} hours)`)
+            });
+            
+            // Update tank stats
+            const lastTankLevel = tankLevels[tankLevels.length - 1];
+            let status = 'Good';
+            if (lastTankLevel >= 50) status = 'Good';
+            else if (lastTankLevel >= 25) status = 'Medium';
+            else status = 'Low';
+            document.getElementById('tankStats').innerHTML = 
+                `Current: ${lastTankLevel}% (${status})`;
+            
+            // 4. Create Irrigation Activity Chart
+            createChart('irrigationChart', {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Pump Active',
+                        data: irrigationActivity,
+                        backgroundColor: irrigationActivity.map(val => val === 1 ? 'rgba(14, 165, 233, 0.7)' : 'rgba(255, 99, 132, 0.1)'),
+                        borderColor: irrigationActivity.map(val => val === 1 ? '#0ea5e9' : '#ff6384'),
+                        borderWidth: 1
+                    }]
+                },
+                options: getChartOptions(`Irrigation Activity (Last ${hours} hours)`)
+            });
+            
+            // Update irrigation stats
+            const totalIrrigation = irrigationActivity.filter(val => val === 1).length;
+            const percentage = ((totalIrrigation / irrigationActivity.length) * 100).toFixed(1);
+            document.getElementById('irrigationStats').innerHTML = 
+                `Active: ${percentage}% (${totalIrrigation} samples)`;
+            
+            // 5. Create Water Consumption Chart (if resource data is available)
+            if (resourceData && resourceData.success) {
+                createChart('waterChart', {
+                    type: 'bar',
+                    data: {
+                        labels: resourceData.hourly_labels || [],
+                        datasets: [{
+                            label: 'Water Consumption (L)',
+                            data: resourceData.hourly_water || [],
+                            backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                            borderColor: '#36a2eb',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: getChartOptions(`Water Consumption (Last ${hours} hours)`)
+                });
+                
+                // Update water stats
+                const waterData = resourceData.hourly_water || [];
+                const totalWater = waterData.reduce((a, b) => a + b, 0).toFixed(2);
+                const avgWater = waterData.length > 0 ? (totalWater / waterData.length).toFixed(2) : '0.00';
+                document.getElementById('waterStats').innerHTML = 
+                    `Total: ${totalWater} L<br>Avg: ${avgWater} L/hour`;
+            } else {
+                // Show message if no resource data
+                document.getElementById('waterChart').parentElement.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <p>Water consumption data not available</p>
+                        <p style="font-size: 0.9em;">Check if resource tracking is enabled</p>
+                    </div>
+                `;
+            }
+            
+            // 6. Create Energy Consumption Chart (if resource data is available)
+            if (resourceData && resourceData.success) {
+                createChart('energyChart', {
+                    type: 'line',
+                    data: {
+                        labels: resourceData.hourly_labels || [],
+                        datasets: [{
+                            label: 'Energy Consumption (kWh)',
+                            data: resourceData.hourly_energy || [],
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.1,
+                            pointRadius: 2
+                        }]
+                    },
+                    options: getChartOptions(`Energy Consumption (Last ${hours} hours)`)
+                });
+                
+                // Update energy stats
+                const energyData = resourceData.hourly_energy || [];
+                const totalEnergy = energyData.reduce((a, b) => a + b, 0).toFixed(4);
+                const avgEnergy = energyData.length > 0 ? (totalEnergy / energyData.length).toFixed(4) : '0.0000';
+                document.getElementById('energyStats').innerHTML = 
+                    `Total: ${totalEnergy} kWh<br>Avg: ${avgEnergy} kWh/hour`;
+            } else {
+                // Show message if no resource data
+                document.getElementById('energyChart').parentElement.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <p>Energy consumption data not available</p>
+                        <p style="font-size: 0.9em;">Check if resource tracking is enabled</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function getChartOptions(title) {
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: title,
+                        color: '#f0fdf4',
+                        font: { size: 14 }
+                    },
+                    legend: {
+                        labels: { color: '#f0fdf4' }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { 
+                            color: '#a7f3d0',
+                            maxRotation: 45,
+                            maxTicksLimit: 10
+                        },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#a7f3d0' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    }
+                }
+            };
+        }
+        
+        function createChart(canvasId, config) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Destroy existing chart
+            if (charts[canvasId]) {
+                charts[canvasId].destroy();
+            }
+            
+            // Create new chart
+            try {
+                charts[canvasId] = new Chart(ctx, config);
+            } catch (error) {
+                console.error('Error creating chart', canvasId, ':', error);
+            }
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData(24);
+            
+            // Auto-refresh every 30 seconds
+            setInterval(() => {
+                loadData(currentHours);
+            }, 30000);
+        });
+    </script>
+</body>
+</html>
