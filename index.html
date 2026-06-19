@@ -80,28 +80,41 @@
       var gistUrl = 'https://gist.githubusercontent.com/Rensushii/02945cbdc4abe5148470106e8a8648b8/raw/tunnel_url.txt?t=' + cacheBuster;
 
       fetch(gistUrl)
-        .then(response => response.text())
-        .then(url => {
+        .then(function(response) { return response.text(); })
+        .then(function(url) {
           var trimmed = url.trim();
-          if (!trimmed.startsWith('https://')) throw new Error('invalid');
-          // Test if the tunnel is actually reachable by hitting /ping
-          var pingUrl = trimmed.replace(/\/$/, '') + '/ping?t=' + cacheBuster;
+          if (!trimmed.startsWith('https://')) {
+            throw new Error('invalid url');
+          }
+
+          // Store the dashboard URL in a constant, never change it
+          var DASHBOARD_URL = trimmed.replace(/\/$/, '');
+
+          // Create a ping URL (separate variable)
+          var pingUrl = DASHBOARD_URL + '/ping?t=' + cacheBuster;
+
+          // Test connectivity by fetching /ping (5-second timeout)
+          var controller = new AbortController();
+          var timeoutId = setTimeout(function() { controller.abort(); }, 5000);
+
           return fetch(pingUrl, { 
             mode: 'cors',
-            signal: AbortSignal.timeout(5000)   // 5-second timeout
-          }).then(pingResponse => {
+            signal: controller.signal
+          }).then(function(pingResponse) {
+            clearTimeout(timeoutId);
             if (pingResponse.ok) {
-              return trimmed;   // all good, redirect to dashboard
+              // Ping successful → redirect to dashboard (using the untouched constant)
+              window.location.replace(DASHBOARD_URL);
             } else {
               throw new Error('ping failed');
             }
+          }).catch(function(err) {
+            clearTimeout(timeoutId);
+            throw err;
           });
         })
-        .then(finalUrl => {
-          window.location.replace(finalUrl);
-        })
-        .catch(() => {
-          // Either Gist fetch failed, URL invalid, or ping failed
+        .catch(function() {
+          // Show offline UI
           document.getElementById('redirectState').classList.add('hidden');
           document.getElementById('offlineState').classList.remove('hidden');
         });
